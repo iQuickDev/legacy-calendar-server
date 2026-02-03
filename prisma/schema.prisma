@@ -1,0 +1,53 @@
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model User {
+  id             Int          @id @default(autoincrement())
+  username       String       @unique
+  password       String
+  
+  hostedEvents   Event[]      @relation("EventHost")
+  
+  invitations    Attendance[]
+}
+
+model Event {
+  id          Int          @id @default(autoincrement())
+  title       String
+  description String?
+  location    String?
+  startTime   DateTime
+  endTime     DateTime
+  
+  hostId      Int
+  host        User         @relation("EventHost", fields: [hostId], references: [id])
+  
+  participants Attendance[]
+}
+
+model Attendance {
+  id      Int          @id @default(autoincrement())
+  userId  Int
+  eventId Int
+  status  InviteStatus @default(PENDING)
+
+  user    User         @relation(fields: [userId], references: [id])
+  event   Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
