@@ -10,5 +10,6 @@ Dockerfile
 tests
 coverage
 README.md
+firebase.json
 eslint.config.mjs
 .prettierrc
