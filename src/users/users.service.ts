@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException } from '@nestjs/common
 import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDto } from './dto/user.dto';
 import { UsersRepository } from './users.repository';
 import { Prisma } from '../generated/prisma/client';
 
@@ -9,7 +10,7 @@ import { Prisma } from '../generated/prisma/client';
 export class UsersService {
   constructor(private readonly usersRepo: UsersRepository) { }
 
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<UserDto> {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
       return await this.usersRepo.create({ username: createUserDto.username, password: hashedPassword });
@@ -21,11 +22,11 @@ export class UsersService {
     }
   }
 
-  findAll() {
+  findAll(): Promise<UserDto[]> {
     return this.usersRepo.findAll();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<UserDto> {
     const user = await this.usersRepo.findOne(id);
     if (!user) throw new NotFoundException(`User with id ${id} not found`);
     return user;
@@ -35,9 +36,13 @@ export class UsersService {
     return this.usersRepo.findOneByUsername(username);
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<UserDto> {
     try {
-      return await this.usersRepo.update(id, updateUserDto as any);
+      const updateData = { ...updateUserDto };
+      if (updateData.password) {
+        updateData.password = await bcrypt.hash(updateData.password, 10);
+      }
+      return await this.usersRepo.update(id, updateData as any);
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError) {
         if (e.code === 'P2002') {
@@ -51,7 +56,7 @@ export class UsersService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<UserDto> {
     try {
       return await this.usersRepo.remove(id);
     } catch (e) {

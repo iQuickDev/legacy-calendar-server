@@ -6,27 +6,42 @@ import { Prisma, User as UserModel } from '../generated/prisma/client';
 export class UsersRepository {
   constructor(private readonly prisma: PrismaService) { }
 
-  create(data: Prisma.UserCreateInput): Promise<UserModel> {
-    return this.prisma.user.create({ data });
+  async create(data: Prisma.UserCreateInput): Promise<Pick<UserModel, 'id' | 'username'>> {
+    return this.prisma.user.create({
+      data,
+      select: { id: true, username: true },
+    });
   }
 
-  findAll(): Promise<UserModel[]> {
-    return this.prisma.user.findMany();
+  findAll(): Promise<Pick<UserModel, 'id' | 'username'>[]> {
+    return this.prisma.user.findMany({
+      select: { id: true, username: true },
+    });
   }
 
-  findOne(id: number): Promise<UserModel | null> {
-    return this.prisma.user.findUnique({ where: { id } });
+  findOne(id: number): Promise<Pick<UserModel, 'id' | 'username'> | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+      select: { id: true, username: true },
+    });
   }
 
   findOneByUsername(username: string): Promise<UserModel | null> {
     return this.prisma.user.findUnique({ where: { username } });
   }
 
-  update(id: number, data: Prisma.UserUpdateInput): Promise<UserModel> {
-    return this.prisma.user.update({ where: { id }, data });
+  update(id: number, data: Prisma.UserUpdateInput): Promise<Pick<UserModel, 'id' | 'username'>> {
+    return this.prisma.user.update({
+      where: { id },
+      data,
+      select: { id: true, username: true },
+    });
   }
 
-  remove(id: number): Promise<UserModel> {
-    return this.prisma.user.delete({ where: { id } });
+  remove(id: number): Promise<Pick<UserModel, 'id' | 'username'>> {
+    return this.prisma.user.delete({
+      where: { id },
+      select: { id: true, username: true },
+    });
   }
 }

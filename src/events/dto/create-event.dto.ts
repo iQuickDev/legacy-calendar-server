@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsDateString, IsInt, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateEventDto {
@@ -26,4 +26,14 @@ export class CreateEventDto {
     @IsDateString()
     @IsNotEmpty()
     endTime: string;
+
+    @ApiProperty({ example: [1, 2], description: 'List of participant user IDs', required: false })
+    @IsOptional()
+    @IsInt({ each: true })
+    participants?: number[];
+
+    @ApiProperty({ example: true, description: 'Whether the event can be joined spontaneously', required: false })
+    @IsOptional()
+    @IsBoolean()
+    isOpen?: boolean;
 }

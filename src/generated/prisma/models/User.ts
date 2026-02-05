@@ -38,18 +38,21 @@ export type UserMinAggregateOutputType = {
   id: number | null
   username: string | null
   password: string | null
+  fcmToken: string | null
 }
 
 export type UserMaxAggregateOutputType = {
   id: number | null
   username: string | null
   password: string | null
+  fcmToken: string | null
 }
 
 export type UserCountAggregateOutputType = {
   id: number
   username: number
   password: number
+  fcmToken: number
   _all: number
 }
 
@@ -66,18 +69,21 @@ export type UserMinAggregateInputType = {
   id?: true
   username?: true
   password?: true
+  fcmToken?: true
 }
 
 export type UserMaxAggregateInputType = {
   id?: true
   username?: true
   password?: true
+  fcmToken?: true
 }
 
 export type UserCountAggregateInputType = {
   id?: true
   username?: true
   password?: true
+  fcmToken?: true
   _all?: true
 }
 
@@ -171,6 +177,7 @@ export type UserGroupByOutputType = {
   id: number
   username: string
   password: string
+  fcmToken: string | null
   _count: UserCountAggregateOutputType | null
   _avg: UserAvgAggregateOutputType | null
   _sum: UserSumAggregateOutputType | null
@@ -200,6 +207,7 @@ export type UserWhereInput = {
   id?: Prisma.IntFilter<"User"> | number
   username?: Prisma.StringFilter<"User"> | string
   password?: Prisma.StringFilter<"User"> | string
+  fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
   hostedEvents?: Prisma.EventListRelationFilter
   invitations?: Prisma.AttendanceListRelationFilter
 }
@@ -208,6 +216,7 @@ export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   hostedEvents?: Prisma.EventOrderByRelationAggregateInput
   invitations?: Prisma.AttendanceOrderByRelationAggregateInput
 }
@@ -219,6 +228,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   password?: Prisma.StringFilter<"User"> | string
+  fcmToken?: Prisma.StringNullableFilter<"User"> | string | null
   hostedEvents?: Prisma.EventListRelationFilter
   invitations?: Prisma.AttendanceListRelationFilter
 }, "id" | "username">
@@ -227,6 +237,7 @@ export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _avg?: Prisma.UserAvgOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
@@ -241,11 +252,13 @@ export type UserScalarWhereWithAggregatesInput = {
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
   username?: Prisma.StringWithAggregatesFilter<"User"> | string
   password?: Prisma.StringWithAggregatesFilter<"User"> | string
+  fcmToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
   username: string
   password: string
+  fcmToken?: string | null
   hostedEvents?: Prisma.EventCreateNestedManyWithoutHostInput
   invitations?: Prisma.AttendanceCreateNestedManyWithoutUserInput
 }
@@ -254,6 +267,7 @@ export type UserUncheckedCreateInput = {
   id?: number
   username: string
   password: string
+  fcmToken?: string | null
   hostedEvents?: Prisma.EventUncheckedCreateNestedManyWithoutHostInput
   invitations?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
 }
@@ -261,6 +275,7 @@ export type UserUncheckedCreateInput = {
 export type UserUpdateInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hostedEvents?: Prisma.EventUpdateManyWithoutHostNestedInput
   invitations?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
 }
@@ -269,6 +284,7 @@ export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hostedEvents?: Prisma.EventUncheckedUpdateManyWithoutHostNestedInput
   invitations?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
 }
@@ -277,23 +293,27 @@ export type UserCreateManyInput = {
   id?: number
   username: string
   password: string
+  fcmToken?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
 }
 
 export type UserAvgOrderByAggregateInput = {
@@ -304,12 +324,14 @@ export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   username?: Prisma.SortOrder
   password?: Prisma.SortOrder
+  fcmToken?: Prisma.SortOrder
 }
 
 export type UserSumOrderByAggregateInput = {
@@ -323,6 +345,10 @@ export type UserScalarRelationFilter = {
 
 export type StringFieldUpdateOperationsInput = {
   set?: string
+}
+
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -364,6 +390,7 @@ export type UserUpdateOneRequiredWithoutInvitationsNestedInput = {
 export type UserCreateWithoutHostedEventsInput = {
   username: string
   password: string
+  fcmToken?: string | null
   invitations?: Prisma.AttendanceCreateNestedManyWithoutUserInput
 }
 
@@ -371,6 +398,7 @@ export type UserUncheckedCreateWithoutHostedEventsInput = {
   id?: number
   username: string
   password: string
+  fcmToken?: string | null
   invitations?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -393,6 +421,7 @@ export type UserUpdateToOneWithWhereWithoutHostedEventsInput = {
 export type UserUpdateWithoutHostedEventsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
 }
 
@@ -400,12 +429,14 @@ export type UserUncheckedUpdateWithoutHostedEventsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   invitations?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitationsInput = {
   username: string
   password: string
+  fcmToken?: string | null
   hostedEvents?: Prisma.EventCreateNestedManyWithoutHostInput
 }
 
@@ -413,6 +444,7 @@ export type UserUncheckedCreateWithoutInvitationsInput = {
   id?: number
   username: string
   password: string
+  fcmToken?: string | null
   hostedEvents?: Prisma.EventUncheckedCreateNestedManyWithoutHostInput
 }
 
@@ -435,6 +467,7 @@ export type UserUpdateToOneWithWhereWithoutInvitationsInput = {
 export type UserUpdateWithoutInvitationsInput = {
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hostedEvents?: Prisma.EventUpdateManyWithoutHostNestedInput
 }
 
@@ -442,6 +475,7 @@ export type UserUncheckedUpdateWithoutInvitationsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   password?: Prisma.StringFieldUpdateOperationsInput | string
+  fcmToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hostedEvents?: Prisma.EventUncheckedUpdateManyWithoutHostNestedInput
 }
 
@@ -489,6 +523,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   id?: boolean
   username?: boolean
   password?: boolean
+  fcmToken?: boolean
   hostedEvents?: boolean | Prisma.User$hostedEventsArgs<ExtArgs>
   invitations?: boolean | Prisma.User$invitationsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
@@ -498,21 +533,24 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   id?: boolean
   username?: boolean
   password?: boolean
+  fcmToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   username?: boolean
   password?: boolean
+  fcmToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
   id?: boolean
   username?: boolean
   password?: boolean
+  fcmToken?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "username" | "password" | "fcmToken", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   hostedEvents?: boolean | Prisma.User$hostedEventsArgs<ExtArgs>
   invitations?: boolean | Prisma.User$invitationsArgs<ExtArgs>
@@ -531,6 +569,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     id: number
     username: string
     password: string
+    fcmToken: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -959,6 +998,7 @@ export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
   readonly username: Prisma.FieldRef<"User", 'String'>
   readonly password: Prisma.FieldRef<"User", 'String'>
+  readonly fcmToken: Prisma.FieldRef<"User", 'String'>
 }
     
 

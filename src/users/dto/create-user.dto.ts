@@ -9,9 +9,9 @@ export class CreateUserDto {
 	@Matches(/^[a-zA-Z0-9._-]+$/)
 	username: string;
 
-	@ApiProperty({ example: 'password123', description: 'The password of the user (min 8 chars)', minLength: 8 })
+	@ApiProperty({ example: 'password123', description: 'The password of the user (min 2 chars)', minLength: 2 })
 	@IsString()
 	@IsNotEmpty()
-	@Length(8, 30)
+	@Length(2, 30)
 	password: string;
 }
