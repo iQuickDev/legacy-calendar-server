@@ -1,7 +1,7 @@
 
 import { ApiProperty } from '@nestjs/swagger';
 import { UserDto } from '../../users/dto/user.dto';
-import { InviteStatus } from '../../generated/prisma/client';
+import { InviteStatus } from '@prisma/client';
 
 export class EventParticipantDto extends UserDto {
     @ApiProperty({ enum: InviteStatus, example: 'PENDING', description: 'Status of the invitation' })

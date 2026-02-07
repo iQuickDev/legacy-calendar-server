@@ -1,9 +1,7 @@
 // https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-  moduleFormat = "cjs"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -17,28 +15,28 @@ enum InviteStatus {
 }
 
 model User {
-  id             Int          @id @default(autoincrement())
-  username       String       @unique
-  password       String
-  fcmToken       String?
-  
-  hostedEvents   Event[]      @relation("EventHost")
-  
-  invitations    Attendance[]
+  id       Int     @id @default(autoincrement())
+  username String  @unique
+  password String
+  fcmToken String?
+
+  hostedEvents Event[] @relation("EventHost")
+
+  invitations Attendance[]
 }
 
 model Event {
-  id          Int          @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String
   description String?
   location    String?
   startTime   DateTime
   endTime     DateTime
-  
-  hostId      Int
-  host        User         @relation("EventHost", fields: [hostId], references: [id])
-  isOpen      Boolean      @default(true)
-  
+
+  hostId Int
+  host   User    @relation("EventHost", fields: [hostId], references: [id])
+  isOpen Boolean @default(true)
+
   participants Attendance[]
 }
 
@@ -48,8 +46,8 @@ model Attendance {
   eventId Int
   status  InviteStatus @default(PENDING)
 
-  user    User         @relation(fields: [userId], references: [id])
-  event   Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id])
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
 
   @@unique([userId, eventId])
 }
