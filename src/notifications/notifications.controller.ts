@@ -21,7 +21,7 @@ export class NotificationsController {
     @Post('subscribe')
     @ApiOperation({ summary: 'Subscribe device to notifications' })
     @ApiResponse({ status: 201, description: 'Subscribed successfully' })
-    subscribe(@Request() req, @Body() body: SubscribeDto) {
-        return this.notificationsService.subscribe(req.user.userId, body.token);
+    async subscribe(@Request() req, @Body() body: SubscribeDto): Promise<void> {
+        await this.notificationsService.subscribe(req.user.userId, body.token);
     }
 }

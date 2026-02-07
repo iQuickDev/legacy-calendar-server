@@ -35,8 +35,8 @@ export class NotificationsService implements OnModuleInit {
         }
     }
 
-    async subscribe(userId: number, token: string) {
-        return this.prisma.user.update({
+    async subscribe(userId: number, token: string): Promise<void> {
+        await this.prisma.user.update({
             where: { id: userId },
             data: { fcmToken: token },
         });

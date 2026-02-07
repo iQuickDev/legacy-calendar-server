@@ -1,13 +1,17 @@
 import { Controller, Post, UseGuards, Request, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthLoginDto } from './dto/auth-login.dto';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-    constructor(private authService: AuthService) { }
+    constructor(
+        private authService: AuthService,
+        private usersService: UsersService,
+    ) { }
 
     @UseGuards(AuthGuard('local'))
     @Post('login')
@@ -25,7 +29,7 @@ export class AuthController {
     @ApiOperation({ summary: 'Get user profile' })
     @ApiResponse({ status: 200, description: 'Return user profile' })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
-    getProfile(@Request() req) {
-        return req.user;
+    async getProfile(@Request() req) {
+        return this.usersService.findOne(req.user.userId);
     }
 }

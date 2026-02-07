@@ -15,10 +15,11 @@ enum InviteStatus {
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  username String  @unique
-  password String
-  fcmToken String?
+  id             Int     @id @default(autoincrement())
+  username       String  @unique
+  password       String
+  fcmToken       String?
+  profilePicture String?
 
   hostedEvents Event[] @relation("EventHost")
 

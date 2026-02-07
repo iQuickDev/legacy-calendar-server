@@ -10,4 +10,7 @@ export class UserDto {
 
     @ApiProperty({ example: 'user@example.com', description: 'User email', required: false })
     email?: string;
+
+    @ApiProperty({ example: '/uploads/profile-pictures/1.webp', description: 'Profile picture URL', required: false, nullable: true })
+    profilePicture?: string | null;
 }

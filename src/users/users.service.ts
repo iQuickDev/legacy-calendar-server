@@ -5,6 +5,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserDto } from './dto/user.dto';
 import { UsersRepository } from './users.repository';
 import { Prisma } from '@prisma/client';
+import sharp from 'sharp';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { existsSync } from 'fs';
 
 @Injectable()
 export class UsersService {
@@ -63,6 +67,48 @@ export class UsersService {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2025') {
         throw new NotFoundException(`User with id ${id} not found`);
       }
+      throw e;
+    }
+  }
+  async uploadProfilePicture(id: number, file: Express.Multer.File): Promise<UserDto> {
+    const user = await this.findOne(id);
+    const uploadDir = path.join(process.cwd(), 'uploads', 'profile-pictures');
+    if (!existsSync(uploadDir)) {
+      await fs.mkdir(uploadDir, { recursive: true });
+    }
+
+    const filename = `${id}.webp`;
+    const filePath = path.join(uploadDir, filename);
+
+    // Process image: resize to 128x128, convert to webp
+    await sharp(file.buffer)
+      .resize(128, 128)
+      .webp()
+      .toFile(filePath);
+
+    const publicUrl = `/uploads/profile-pictures/${filename}`;
+    return await this.usersRepo.update(id, { profilePicture: publicUrl } as any);
+  }
+
+  async removeProfilePicture(id: number): Promise<UserDto> {
+    const user = await this.findOne(id);
+
+    // Attempt to remove file if it exists and looks like a local path
+    if (user.profilePicture && user.profilePicture.startsWith('/uploads/')) {
+      try {
+        const relativePath = user.profilePicture.replace('/uploads/', '');
+        const filePath = path.join(process.cwd(), 'uploads', relativePath);
+        await fs.unlink(filePath);
+      } catch (error) {
+        // Ignore error if file doesn't exist, but log it if needed
+        console.error('Failed to delete profile picture file:', error);
+      }
+    }
+
+    try {
+      return await this.usersRepo.update(id, { profilePicture: null } as any);
+    } catch (e) {
+      console.error('Failed to update user profile picture in DB:', e);
       throw e;
     }
   }
