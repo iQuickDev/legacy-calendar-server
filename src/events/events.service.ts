@@ -5,7 +5,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { UpdateEventDto } from './dto/update-event.dto';
 import { EventResponseDto, EventParticipantDto } from './dto/event-response.dto';
 import { UserDto } from '../users/dto/user.dto';
-import { Prisma, InviteStatus } from '../generated/prisma/client';
+import { Prisma, InviteStatus } from '@prisma/client';
 
 @Injectable()
 export class EventsService {
