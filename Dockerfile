@@ -40,6 +40,7 @@ WORKDIR /app
 
 # Set environment variables
 ENV NODE_ENV=production
+ENV NODE_OPTIONS=--openssl-legacy-provider
 
 # Copy build artifacts and production dependencies
 COPY --from=prod-deps /app/node_modules ./node_modules

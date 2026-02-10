@@ -45,11 +45,14 @@ function getHttpsOptions(logger: Logger) {
         logger.log(`SSL configuration found. Loading certificates...`);
         return {
           key: fs.readFileSync(keyFile),
-          cert: fs.readFileSync(certFile),
+          cert: fs.readFileSync(certFile)
         };
       } else {
+        const missing: string[] = [];
+        if (!fs.existsSync(keyFile)) missing.push(keyFile);
+        if (!fs.existsSync(certFile)) missing.push(certFile);
         logger.warn(
-          `SSL paths provided but files not found: ${keyFile}, ${certFile}. Falling back to HTTP.`,
+          `SSL paths provided but files not found: ${missing.join(', ')}. Falling back to HTTP.`,
         );
       }
     } catch (error) {
