@@ -17,9 +17,9 @@ export class EventsRepository {
     async findAll(): Promise<Event[]> {
         return this.prisma.event.findMany({
             include: {
-                host: { select: { id: true, username: true } },
+                host: { select: { id: true, username: true, profilePicture: true } },
                 participants: {
-                    include: { user: { select: { id: true, username: true } } }
+                    include: { user: { select: { id: true, username: true, profilePicture: true } } }
                 }
             }
         });
@@ -29,9 +29,9 @@ export class EventsRepository {
         return this.prisma.event.findUnique({
             where: { id },
             include: {
-                host: { select: { id: true, username: true } },
+                host: { select: { id: true, username: true, profilePicture: true } },
                 participants: {
-                    include: { user: { select: { id: true, username: true } } }
+                    include: { user: { select: { id: true, username: true, profilePicture: true } } }
                 }
             },
         });
@@ -62,9 +62,9 @@ export class EventsRepository {
             where: { id },
             data,
             include: {
-                host: { select: { id: true, username: true } },
+                host: { select: { id: true, username: true, profilePicture: true } },
                 participants: {
-                    include: { user: { select: { id: true, username: true } } }
+                    include: { user: { select: { id: true, username: true, profilePicture: true } } }
                 }
             },
         });

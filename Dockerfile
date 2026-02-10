@@ -47,6 +47,9 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/package.json ./package.json
 
+# Create uploads directory and set permissions for the node user
+RUN mkdir -p /app/uploads/profile-pictures && chown -R node:node /app/uploads
+
 # Use non-root user for security
 USER node
 
