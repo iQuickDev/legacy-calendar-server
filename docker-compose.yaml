@@ -1,0 +1,14 @@
+services:
+  server:
+    image: ghcr.io/iquickdev/legacy-calendar-server:latest
+    container_name: legacy-calendar-server
+    restart: always
+    ports:
+      - "3001:3000"
+    volumes:
+      - /home/ubuntu/legacy_calendar_data/firebase.json:/app/firebase.json
+      - /home/ubuntu/legacy_calendar_data/.env:/app/.env
+      - /home/ubuntu/legacy_calendar_data/uploads:/app/uploads
+      - /home/ubuntu/legacy_calendar_data/secrets:/app/secrets
+    env_file:
+      - /home/ubuntu/legacy_calendar_data/.env
