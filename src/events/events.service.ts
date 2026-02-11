@@ -200,12 +200,13 @@ export class EventsService {
         const hostDto: UserDto = {
             id: event.host.id,
             username: event.host.username,
-            // email is not in schema based on view_file earlier, only username/password/fcmToken
+            profilePicture: event.host.profilePicture,
         };
 
         const participantsDto: EventParticipantDto[] = event.participants.map((p: any) => ({
             id: p.user.id,
             username: p.user.username,
+            profilePicture: p.user.profilePicture,
             status: p.status,
         }));
 
