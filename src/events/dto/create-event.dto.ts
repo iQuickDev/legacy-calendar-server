@@ -36,4 +36,24 @@ export class CreateEventDto {
     @IsOptional()
     @IsBoolean()
     isOpen?: boolean;
+
+    @ApiProperty({ example: true, description: 'Whether the event has food', required: false })
+    @IsOptional()
+    @IsBoolean()
+    hasFood?: boolean;
+
+    @ApiProperty({ example: true, description: 'Whether the event has weed', required: false })
+    @IsOptional()
+    @IsBoolean()
+    hasWeed?: boolean;
+
+    @ApiProperty({ example: true, description: 'Whether the event has sleep', required: false })
+    @IsOptional()
+    @IsBoolean()
+    hasSleep?: boolean;
+
+    @ApiProperty({ example: true, description: 'Whether the event has alcohol', required: false })
+    @IsOptional()
+    @IsBoolean()
+    hasAlcohol?: boolean;
 }

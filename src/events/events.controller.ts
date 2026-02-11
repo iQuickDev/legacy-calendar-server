@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Param, Delete, UseGuards, Request, ParseIn
 import { EventsService } from './events.service';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { ParticipateDto } from './dto/participate.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { ApiBearerAuth, ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { EventResponseDto } from './dto/event-response.dto';
@@ -73,7 +74,7 @@ export class EventsController {
     @ApiResponse({ status: 201, description: 'Joined event successfully' })
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     @ApiResponse({ status: 404, description: 'Event not found' })
-    join(@Param('id', ParseIntPipe) id: number, @Request() req) {
-        return this.eventsService.join(id, req.user.userId);
+    join(@Param('id', ParseIntPipe) id: number, @Body() participateDto: ParticipateDto, @Request() req) {
+        return this.eventsService.join(id, req.user.userId, participateDto);
     }
 }

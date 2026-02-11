@@ -43,6 +43,12 @@ model Event {
   startTime   DateTime
   endTime     DateTime
 
+  // Event Features
+  hasFood    Boolean @default(false)
+  hasWeed    Boolean @default(false)
+  hasSleep   Boolean @default(false)
+  hasAlcohol Boolean @default(false)
+
   hostId Int
   host   User    @relation("EventHost", fields: [hostId], references: [id])
   isOpen Boolean @default(true)
@@ -55,6 +61,12 @@ model Attendance {
   userId  Int
   eventId Int
   status  InviteStatus @default(PENDING)
+
+  // Participant Features
+  wantsFood    Boolean @default(false)
+  wantsWeed    Boolean @default(false)
+  wantsSleep   Boolean @default(false)
+  wantsAlcohol Boolean @default(false)
 
   user  User  @relation(fields: [userId], references: [id])
   event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)

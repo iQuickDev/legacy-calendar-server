@@ -1,0 +1,11 @@
+-- AlterTable
+ALTER TABLE "Attendance" ADD COLUMN     "wantsAlcohol" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "wantsFood" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "wantsSleep" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "wantsWeed" BOOLEAN NOT NULL DEFAULT false;
+
+-- AlterTable
+ALTER TABLE "Event" ADD COLUMN     "hasAlcohol" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "hasFood" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "hasSleep" BOOLEAN NOT NULL DEFAULT false,
+ADD COLUMN     "hasWeed" BOOLEAN NOT NULL DEFAULT false;

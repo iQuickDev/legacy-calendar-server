@@ -3,6 +3,7 @@ import { CreateEventDto } from './dto/create-event.dto';
 import { EventsRepository } from './events.repository';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { ParticipateDto } from './dto/participate.dto';
 import { EventResponseDto, EventParticipantDto } from './dto/event-response.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { Prisma, InviteStatus } from '@prisma/client';
@@ -169,7 +170,7 @@ export class EventsService {
         }
     }
 
-    async join(eventId: number, userId: number) {
+    async join(eventId: number, userId: number, participateDto: ParticipateDto) {
         const event = await this.findOne(eventId); // Ensure event exists and get DTO
 
         const isParticipant = event.participants.some(p => p.id === userId);
@@ -179,7 +180,8 @@ export class EventsService {
         }
 
         try {
-            const result = await this.eventsRepo.join(userId, eventId);
+            // Include wants... fields from participateDto
+            const result = await this.eventsRepo.join(userId, eventId, participateDto);
 
             // Notify host
             const hostTokens = await this.eventsRepo.getUserTokens([event.host.id]);
@@ -211,6 +213,10 @@ export class EventsService {
             username: p.user.username,
             profilePicture: p.user.profilePicture,
             status: p.status,
+            wantsFood: p.wantsFood,
+            wantsWeed: p.wantsWeed,
+            wantsSleep: p.wantsSleep,
+            wantsAlcohol: p.wantsAlcohol,
         }));
 
         return {
@@ -223,6 +229,10 @@ export class EventsService {
             host: hostDto,
             participants: participantsDto,
             isOpen: event.isOpen,
+            hasFood: event.hasFood,
+            hasWeed: event.hasWeed,
+            hasSleep: event.hasSleep,
+            hasAlcohol: event.hasAlcohol,
         };
     }
 }

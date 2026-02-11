@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Prisma, Event, InviteStatus } from '@prisma/client';
+import { ParticipateDto } from './dto/participate.dto';
 
 @Injectable()
 export class EventsRepository {
@@ -41,18 +42,28 @@ export class EventsRepository {
         return this.prisma.event.delete({ where: { id } });
     }
 
-    async join(userId: number, eventId: number) {
+    async join(userId: number, eventId: number, participateDto: ParticipateDto) {
+        const { wantsFood, wantsWeed, wantsSleep, wantsAlcohol } = participateDto;
+
         return this.prisma.attendance.upsert({
             where: {
                 userId_eventId: { userId, eventId }
             },
             update: {
                 status: 'ACCEPTED',
+                wantsFood,
+                wantsWeed,
+                wantsSleep,
+                wantsAlcohol,
             },
             create: {
                 userId,
                 eventId,
                 status: 'ACCEPTED',
+                wantsFood,
+                wantsWeed,
+                wantsSleep,
+                wantsAlcohol,
             },
         });
     }

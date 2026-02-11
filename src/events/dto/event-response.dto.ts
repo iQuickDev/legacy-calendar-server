@@ -6,6 +6,18 @@ import { InviteStatus } from '@prisma/client';
 export class EventParticipantDto extends UserDto {
     @ApiProperty({ enum: InviteStatus, example: 'PENDING', description: 'Status of the invitation' })
     status: InviteStatus;
+
+    @ApiProperty({ example: true, description: 'User wants food' })
+    wantsFood?: boolean;
+
+    @ApiProperty({ example: true, description: 'User wants weed' })
+    wantsWeed?: boolean;
+
+    @ApiProperty({ example: true, description: 'User wants sleep' })
+    wantsSleep?: boolean;
+
+    @ApiProperty({ example: true, description: 'User wants alcohol' })
+    wantsAlcohol?: boolean;
 }
 
 export class EventResponseDto {
@@ -35,4 +47,16 @@ export class EventResponseDto {
 
     @ApiProperty({ example: true, description: 'Whether the event is open for spontaneous joining' })
     isOpen: boolean;
+
+    @ApiProperty({ example: true, description: 'Event has food' })
+    hasFood?: boolean;
+
+    @ApiProperty({ example: true, description: 'Event has weed' })
+    hasWeed?: boolean;
+
+    @ApiProperty({ example: true, description: 'Event has sleep' })
+    hasSleep?: boolean;
+
+    @ApiProperty({ example: true, description: 'Event has alcohol' })
+    hasAlcohol?: boolean;
 }
