@@ -8,7 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { NotificationsModule } from './notifications/notifications.module';
 import { PrismaModule } from './prisma/prisma.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
+import { UploadsModule } from './uploads/uploads.module';
 import { join } from 'path';
 
 @Module({
@@ -19,10 +19,7 @@ import { join } from 'path';
     UsersModule,
     EventsModule,
     NotificationsModule,
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/uploads',
-    }),
+    UploadsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
