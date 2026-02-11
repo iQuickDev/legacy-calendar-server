@@ -138,12 +138,15 @@ export class EventsService {
 
         const invitedUser = await this.eventsRepo.inviteUser(eventId, username);
 
-        if (invitedUser && invitedUser.fcmToken) {
-            this.notificationsService.sendNotification(
-                invitedUser.fcmToken,
-                'New Invitation',
-                `You have been invited to "${event.title}"`
-            );
+        if (invitedUser) {
+            const tokens = await this.eventsRepo.getUserTokens([invitedUser.id]);
+            if (tokens.length > 0) {
+                this.notificationsService.sendMulticast(
+                    tokens,
+                    'New Invitation',
+                    `You have been invited to "${event.title}"`
+                );
+            }
         }
 
         return { message: 'User invited' };

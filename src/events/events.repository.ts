@@ -96,33 +96,27 @@ export class EventsRepository {
     async getParticipantTokens(eventId: number): Promise<string[]> {
         const attendances = await this.prisma.attendance.findMany({
             where: { eventId },
-            include: { user: true },
+            include: { user: { include: { fcmTokens: true } } },
         });
 
-        return attendances
-            .map((a) => a.user.fcmToken)
-            .filter((token): token is string => !!token);
+        return attendances.flatMap((a) => a.user.fcmTokens.map((t) => t.token));
     }
 
     async getParticipantTokensByStatus(eventId: number, status: InviteStatus): Promise<string[]> {
         const attendances = await this.prisma.attendance.findMany({
             where: { eventId, status },
-            include: { user: true },
+            include: { user: { include: { fcmTokens: true } } },
         });
 
-        return attendances
-            .map((a) => a.user.fcmToken)
-            .filter((token): token is string => !!token);
+        return attendances.flatMap((a) => a.user.fcmTokens.map((t) => t.token));
     }
 
     async getUserTokens(userIds: number[]): Promise<string[]> {
-        const users = await this.prisma.user.findMany({
-            where: { id: { in: userIds } },
-            select: { fcmToken: true },
+        const tokens = await this.prisma.fcmToken.findMany({
+            where: { userId: { in: userIds } },
+            select: { token: true },
         });
 
-        return users
-            .map((u) => u.fcmToken)
-            .filter((token): token is string => !!token);
+        return tokens.map((t) => t.token);
     }
 }
