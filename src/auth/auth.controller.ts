@@ -4,6 +4,7 @@ import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthLoginDto } from './dto/auth-login.dto';
+import { ChangePasswordDto } from './dto/change-password.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -31,5 +32,17 @@ export class AuthController {
     @ApiResponse({ status: 401, description: 'Unauthorized' })
     async getProfile(@Request() req) {
         return this.usersService.findOne(req.user.userId);
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(AuthGuard('jwt'))
+    @Post('change-password')
+    @ApiOperation({ summary: 'Change user password' })
+    @ApiBody({ type: ChangePasswordDto })
+    @ApiResponse({ status: 200, description: 'Password changed successfully' })
+    @ApiResponse({ status: 400, description: 'Incorrect current password' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    async changePassword(@Request() req, @Body() changePasswordDto: ChangePasswordDto) {
+        return this.authService.changePassword(req.user.userId, changePasswordDto);
     }
 }

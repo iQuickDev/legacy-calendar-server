@@ -26,6 +26,12 @@ export class UsersRepository {
     });
   }
 
+  findOneWithPassword(id: number): Promise<UserModel | null> {
+    return this.prisma.user.findUnique({
+      where: { id },
+    });
+  }
+
   findOneByUsername(username: string): Promise<UserModel | null> {
     return this.prisma.user.findUnique({ where: { username } });
   }

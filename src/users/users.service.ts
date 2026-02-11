@@ -36,6 +36,10 @@ export class UsersService {
     return user;
   }
 
+  async findOneWithPassword(id: number) {
+    return this.usersRepo.findOneWithPassword(id);
+  }
+
   async findOneByUsername(username: string) {
     return this.usersRepo.findOneByUsername(username);
   }

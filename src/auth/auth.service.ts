@@ -25,4 +25,18 @@ export class AuthService {
             access_token: this.jwtService.sign(payload),
         };
     }
+
+    async changePassword(userId: number, changePasswordDto: any) {
+        const user = await this.usersService.findOneWithPassword(userId);
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        const isPasswordValid = await bcrypt.compare(changePasswordDto.currentPassword, user.password);
+        if (!isPasswordValid) {
+            throw new Error('Current password is incorrect');
+        }
+
+        return this.usersService.update(userId, { password: changePasswordDto.newPassword });
+    }
 }
