@@ -36,8 +36,6 @@ export class NotificationsService implements OnModuleInit {
     }
 
     async subscribe(userId: number, token: string): Promise<void> {
-        // Delete the token if it exists (it might have belonged to another user or already to this user)
-        // This ensures the token is uniquely associated with the current user.
         await this.prisma.fcmToken.deleteMany({
             where: { token },
         });

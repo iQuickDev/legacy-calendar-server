@@ -7,6 +7,7 @@ import { ParticipateDto } from './dto/participate.dto';
 import { EventResponseDto, EventParticipantDto } from './dto/event-response.dto';
 import { UserDto } from '../users/dto/user.dto';
 import { Prisma, InviteStatus } from '@prisma/client';
+import { NotificationCode } from '../notifications/notification-codes';
 
 @Injectable()
 export class EventsService {
@@ -18,13 +19,13 @@ export class EventsService {
     async create(createEventDto: CreateEventDto, userId: number): Promise<EventResponseDto> {
         const { participants, ...eventData } = createEventDto;
 
-        // Ensure IDs are numbers
         const hostId = Number(userId);
         const participantIds = participants?.map(id => Number(id)) || [];
 
         try {
             const event = await this.eventsRepo.create({
                 ...eventData,
+                endTime: (eventData.endTime || null) as any,
                 host: { connect: { id: hostId } },
                 participants: participantIds.length ? {
                     create: participantIds.map(id => ({
@@ -34,9 +35,8 @@ export class EventsService {
                 } : undefined
             });
 
-            // Notify participants (Invitation)
             if (participantIds.length > 0) {
-                this.notifyUserIds(participantIds, 'New Invitation', `You have been invited to "${event.title}"`);
+                this.notifyUserIds(participantIds, event.id, NotificationCode.INVITATION_NEW, 'New Invitation', `You have been invited to "${event.title}"`);
             }
 
             return this.findOne(event.id);
@@ -61,13 +61,6 @@ export class EventsService {
     }
 
     async remove(id: number, userId: number) {
-        // We use findOne internal calling repo directly to avoid circular dependency or overhead if we just want check hostId?
-        // actually findOne calls this.eventsRepo.findOne, so it returns the entity from repo (but typed as DTO in service signature now?).
-        // Wait, if I change findOne signature, I need to be careful.
-        // The previous findOne returned the database entity.
-        // Let's use eventsRepo.findOne directly here to check permissions on the raw entity if needed, 
-        // OR rely on DTO if it has hostId... DTO has host object.
-
         const event = await this.eventsRepo.findOne(id);
         if (!event) throw new NotFoundException(`Event with id ${id} not found`);
 
@@ -75,8 +68,7 @@ export class EventsService {
             throw new ForbiddenException('Only the host can delete this event');
         }
 
-        // Notify before deleting, because we need participants
-        await this.notifyParticipants(event.id, 'Event Cancelled', `Event "${event.title}" has been cancelled.`);
+        await this.notifyParticipants(event.id, NotificationCode.EVENT_CANCELLED, 'Event Cancelled', `Event "${event.title}" has been cancelled.`);
 
         return this.eventsRepo.remove(id);
     }
@@ -92,7 +84,6 @@ export class EventsService {
         const updateData: any = { ...eventData };
 
         if (participants) {
-            // "event" here is the result of findOne, which is an EventResponseDto
             const existingUserIds = event.participants.map(p => p.id);
             const toAdd = participants.filter(id => !existingUserIds.includes(id));
             const toRemove = existingUserIds.filter(id => !participants.includes(id));
@@ -114,17 +105,15 @@ export class EventsService {
 
         await this.eventsRepo.update(id, updateData);
 
-        // Notify newly added participants
         if (participants) {
             const existingUserIds = event.participants.map(p => p.id);
             const toAdd = participants.filter(id => !existingUserIds.includes(id));
             if (toAdd.length > 0) {
-                this.notifyUserIds(toAdd, 'New Invitation', `You have been invited to "${event.title}"`);
+                this.notifyUserIds(toAdd, event.id, NotificationCode.INVITATION_NEW, 'New Invitation', `You have been invited to "${event.title}"`);
             }
         }
 
-        // Notify existing participants who accepted
-        this.notifyParticipants(event.id, 'Event Updated', `Event "${event.title}" has been updated.`, InviteStatus.ACCEPTED);
+        this.notifyParticipants(event.id, NotificationCode.EVENT_UPDATED, 'Event Updated', `Event "${event.title}" has been updated.`, InviteStatus.ACCEPTED);
 
         return this.findOne(id);
     }
@@ -145,7 +134,8 @@ export class EventsService {
                 this.notificationsService.sendMulticast(
                     tokens,
                     'New Invitation',
-                    `You have been invited to "${event.title}"`
+                    `You have been invited to "${event.title}"`,
+                    { type: NotificationCode.INVITATION_NEW, eventId: String(eventId) }
                 );
             }
         }
@@ -153,51 +143,89 @@ export class EventsService {
         return { message: 'User invited' };
     }
 
-    private async notifyParticipants(eventId: number, title: string, body: string, status?: InviteStatus) {
+    private async notifyParticipants(eventId: number, type: NotificationCode, title: string, body: string, status?: InviteStatus) {
         const tokens = status
             ? await this.eventsRepo.getParticipantTokensByStatus(eventId, status)
             : await this.eventsRepo.getParticipantTokens(eventId);
 
         if (tokens.length > 0) {
-            this.notificationsService.sendMulticast(tokens, title, body);
+            this.notificationsService.sendMulticast(tokens, title, body, { type, eventId: String(eventId) });
         }
     }
 
-    private async notifyUserIds(userIds: number[], title: string, body: string) {
+    private async notifyUserIds(userIds: number[], eventId: number, type: NotificationCode, title: string, body: string) {
         const tokens = await this.eventsRepo.getUserTokens(userIds);
         if (tokens.length > 0) {
-            this.notificationsService.sendMulticast(tokens, title, body);
+            this.notificationsService.sendMulticast(tokens, title, body, { type, eventId: String(eventId) });
         }
     }
 
     async join(eventId: number, userId: number, participateDto: ParticipateDto) {
-        const event = await this.findOne(eventId); // Ensure event exists and get DTO
+        const event = await this.findOne(eventId);
 
-        const isParticipant = event.participants.some(p => p.id === userId);
+        const participantData = event.participants.find(p => p.id === userId);
+        const isParticipant = !!participantData;
 
         if (!event.isOpen && !isParticipant) {
             throw new ForbiddenException('This event is closed and cannot be joined spontaneously');
         }
 
         try {
-            // Include wants... fields from participateDto
             const result = await this.eventsRepo.join(userId, eventId, participateDto);
 
-            // Notify host
             const hostTokens = await this.eventsRepo.getUserTokens([event.host.id]);
             if (hostTokens.length > 0) {
                 const joiningUser = await this.eventsRepo.getUserById(userId);
                 const username = joiningUser?.username || 'A user';
-                this.notificationsService.sendMulticast(
-                    hostTokens,
-                    'Invite Accepted',
-                    `${username} has accepted your invitation to "${event.title}"`
-                );
+                const wasPending = participantData?.status === 'PENDING';
+
+                if (!isParticipant || wasPending) {
+                    this.notificationsService.sendMulticast(
+                        hostTokens,
+                        'Invite Accepted',
+                        `${username} has accepted your invitation to "${event.title}"`,
+                        { type: NotificationCode.PARTICIPATION_ACCEPTED, eventId: String(eventId) }
+                    );
+                } else {
+                    this.notificationsService.sendMulticast(
+                        hostTokens,
+                        'Participation Updated',
+                        `${username} has updated their preferences for "${event.title}"`,
+                        { type: NotificationCode.PARTICIPATION_UPDATED, eventId: String(eventId) }
+                    );
+                }
             }
 
             return result;
         } catch (e) {
             throw e;
+        }
+    }
+
+    async leave(eventId: number, userId: number) {
+        const event = await this.findOne(eventId);
+
+        try {
+            const result = await this.eventsRepo.leave(userId, eventId);
+
+            const hostTokens = await this.eventsRepo.getUserTokens([event.host.id]);
+            if (hostTokens.length > 0) {
+                const leavingUser = await this.eventsRepo.getUserById(userId);
+                const username = leavingUser?.username || 'A user';
+                this.notificationsService.sendMulticast(
+                    hostTokens,
+                    'Participation Cancelled',
+                    `${username} has cancelled their participation in "${event.title}"`,
+                    { type: NotificationCode.PARTICIPATION_CANCELLED, eventId: String(eventId) }
+                );
+            }
+
+            return result;
+        } catch (error) {
+            if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+                throw new NotFoundException('Participation not found');
+            }
+            throw error;
         }
     }
 
@@ -225,7 +253,7 @@ export class EventsService {
             description: event.description,
             location: event.location,
             startTime: event.startTime,
-            endTime: event.endTime,
+            endTime: event.endTime ?? null,
             host: hostDto,
             participants: participantsDto,
             isOpen: event.isOpen,

@@ -22,10 +22,10 @@ export class CreateEventDto {
     @IsNotEmpty()
     startTime: string;
 
-    @ApiProperty({ example: '2026-02-04T11:00:00Z', description: 'End time (ISO 8601)' })
+    @ApiProperty({ example: '2026-02-04T11:00:00Z', description: 'End time (ISO 8601)', required: false })
     @IsDateString()
-    @IsNotEmpty()
-    endTime: string;
+    @IsOptional()
+    endTime?: string;
 
     @ApiProperty({ example: [1, 2], description: 'List of participant user IDs', required: false })
     @IsOptional()

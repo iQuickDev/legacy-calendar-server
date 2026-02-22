@@ -17,13 +17,11 @@ export class UploadsController {
         const filePath = join(process.cwd(), 'uploads', category, filename);
 
         if (existsSync(filePath)) {
-            // Serve locally if exists
             const file = createReadStream(filePath);
             file.pipe(res);
             return;
         }
 
-        // Fallback to remote if configured
         const remoteUrl = this.configService.get<string>('REMOTE_UPLOADS_URL');
         if (remoteUrl) {
             const sanitizedRemoteUrl = remoteUrl.endsWith('/') ? remoteUrl.slice(0, -1) : remoteUrl;

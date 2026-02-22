@@ -41,9 +41,8 @@ model Event {
   description String?
   location    String?
   startTime   DateTime
-  endTime     DateTime
+  endTime     DateTime?
 
-  // Event Features
   hasFood    Boolean @default(false)
   hasWeed    Boolean @default(false)
   hasSleep   Boolean @default(false)
@@ -62,7 +61,6 @@ model Attendance {
   eventId Int
   status  InviteStatus @default(PENDING)
 
-  // Participant Features
   wantsFood    Boolean @default(false)
   wantsWeed    Boolean @default(false)
   wantsSleep   Boolean @default(false)

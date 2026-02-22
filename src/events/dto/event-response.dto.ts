@@ -36,8 +36,8 @@ export class EventResponseDto {
     @ApiProperty({ example: '2026-02-04T10:00:00Z', description: 'Start time' })
     startTime: Date;
 
-    @ApiProperty({ example: '2026-02-04T11:00:00Z', description: 'End time' })
-    endTime: Date;
+    @ApiProperty({ example: '2026-02-04T11:00:00Z', description: 'End time', required: false })
+    endTime: Date | null;
 
     @ApiProperty({ type: UserDto, description: 'Host of the event' })
     host: UserDto;

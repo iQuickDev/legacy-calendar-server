@@ -1,10 +1,11 @@
-import { Controller, Post, UseGuards, Request, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Request, Body, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AuthLoginDto } from './dto/auth-login.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -25,7 +26,7 @@ export class AuthController {
     }
 
     @ApiBearerAuth()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(JwtAuthGuard)
     @Post('profile')
     @ApiOperation({ summary: 'Get user profile' })
     @ApiResponse({ status: 200, description: 'Return user profile' })
@@ -35,7 +36,7 @@ export class AuthController {
     }
 
     @ApiBearerAuth()
-    @UseGuards(AuthGuard('jwt'))
+    @UseGuards(JwtAuthGuard)
     @Post('change-password')
     @ApiOperation({ summary: 'Change user password' })
     @ApiBody({ type: ChangePasswordDto })

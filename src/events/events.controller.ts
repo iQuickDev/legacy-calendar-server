@@ -77,4 +77,26 @@ export class EventsController {
     join(@Param('id', ParseIntPipe) id: number, @Body() participateDto: ParticipateDto, @Request() req) {
         return this.eventsService.join(id, req.user.userId, participateDto);
     }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Delete(':id/join')
+    @ApiOperation({ summary: 'Leave an event / Cancel participation' })
+    @ApiResponse({ status: 200, description: 'Left event successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 404, description: 'Event or participation not found' })
+    leave(@Param('id', ParseIntPipe) id: number, @Request() req) {
+        return this.eventsService.leave(id, req.user.userId);
+    }
+
+    @ApiBearerAuth()
+    @UseGuards(JwtAuthGuard)
+    @Patch(':id/join')
+    @ApiOperation({ summary: 'Edit participation details' })
+    @ApiResponse({ status: 200, description: 'Participation updated successfully' })
+    @ApiResponse({ status: 401, description: 'Unauthorized' })
+    @ApiResponse({ status: 404, description: 'Event not found' })
+    editParticipation(@Param('id', ParseIntPipe) id: number, @Body() participateDto: ParticipateDto, @Request() req) {
+        return this.eventsService.join(id, req.user.userId, participateDto);
+    }
 }

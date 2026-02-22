@@ -68,6 +68,14 @@ export class EventsRepository {
         });
     }
 
+    async leave(userId: number, eventId: number) {
+        return this.prisma.attendance.delete({
+            where: {
+                userId_eventId: { userId, eventId }
+            }
+        });
+    }
+
     async update(id: number, data: any): Promise<Event> {
         return this.prisma.event.update({
             where: { id },
